@@ -1,0 +1,111 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.hero {
+  width: min(850px, 100%);
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: 7px 14px;
+  border: 1px solid #d8d8d8;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+}
+
+.hero h1 {
+  margin: 28px 0 18px;
+  font-size: clamp(48px, 7vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -4px;
+}
+
+.hero h1 span {
+  color: #666;
+}
+
+.subtitle {
+  max-width: 620px;
+  margin: 0 auto 35px;
+  color: #666;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.search-box {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid #d8d8d8;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.search-box textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  background: transparent;
+}
+
+.search-box button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #111;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-box button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #333;
+}
+
+.search-box button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.examples {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #777;
+  font-size: 14px;
+}
+
+.examples button {
+  padding: 7px 12px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: white;
+  color: #444;
+  cursor: pointer;
+}
+
+.examples button:hover {
+  background: #f3f3f3;
+}
