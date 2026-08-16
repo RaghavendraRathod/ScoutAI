@@ -4,6 +4,8 @@ import "./App.css";
 function App() {
   const [query, setQuery] = useState("");
 const [opportunities, setOpportunities] = useState<any[]>([]);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
 
 const [profile, setProfile] = useState({
   education: "",
@@ -14,6 +16,12 @@ const [profile, setProfile] = useState({
 
   
 async function handleScout() {
+   if (!query.trim()) return;
+
+  setLoading(true);
+   setError("");
+  setOpportunities([]);
+
   try {
     const response = await fetch("http://localhost:5000/api/scout", {
       method: "POST",
@@ -21,19 +29,30 @@ async function handleScout() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query: query,
-        profile: profile,
+         query,
+         profile,
       }),
     });
 
     const data = await response.json();
 
+    if (!response.ok) {
+  throw new Error(data.error || "ScoutAI request failed");
+}
+
 console.log("Backend response:", data);
 
 setOpportunities(data.opportunities || []);
+} catch (error) {
+  console.error("Scout error:", error);
 
-  } catch (error) {
-    console.error("ScoutAI request failed:", error);
+  setError(
+    error instanceof Error
+      ? error.message
+      : "Something went wrong while scouting."
+  );
+}finally {
+    setLoading(false);
   }
 }
 
@@ -118,9 +137,13 @@ setOpportunities(data.opportunities || []);
             rows={3}
           />
 
-          <button onClick={handleScout} disabled={!query.trim()}>
-            Start Scouting
-          </button>
+         <button
+  type="button"
+  onClick={handleScout}
+  disabled={loading}
+>
+  {loading ? "Scouting..." : "Start Scouting"}
+</button>
         </div>
 
         <div className="examples">
@@ -138,6 +161,38 @@ setOpportunities(data.opportunities || []);
           </button>
         </div>
       </section>
+
+{loading && (
+  <div className="scout-loading">
+    <div className="loading-spinner"></div>
+
+    <h3>ScoutAI is working...</h3>
+
+    <p>
+      Searching the web and analyzing opportunities
+      based on your profile.
+    </p>
+  </div>
+)}
+
+{error && (
+  <div className="scout-error">
+    <h3>ScoutAI couldn't complete the search</h3>
+    <p>{error}</p>
+    <button type="button" onClick={handleScout}>
+      Try again
+    </button>
+  </div>
+)}
+
+{!loading && !error && query.trim() && opportunities.length === 0 && (
+  <div className="no-results">
+    <h3>No strong matches found</h3>
+    <p>
+      Try a broader search or change your profile interests.
+    </p>
+  </div>
+)}
 
      <section className="results">
   <div className="results-header">
@@ -175,6 +230,33 @@ setOpportunities(data.opportunities || []);
           {opportunity.whyRelevant}
         </p>
 
+{opportunity.matchReasons?.length > 0 && (
+  <div className="match-reasons">
+    <h4>Why you're a good match</h4>
+
+    <ul>
+      {opportunity.matchReasons.map(
+        (reason: string, reasonIndex: number) => (
+          <li key={reasonIndex}>✓ {reason}</li>
+        )
+      )}
+    </ul>
+  </div>
+)}
+
+{opportunity.potentialGaps?.length > 0 && (
+  <div className="potential-gaps">
+    <h4>Potential gaps</h4>
+
+    <ul>
+      {opportunity.potentialGaps.map(
+        (gap: string, gapIndex: number) => (
+          <li key={gapIndex}>⚠ {gap}</li>
+        )
+      )}
+    </ul>
+  </div>
+)}
         <a
           href={opportunity.url}
           target="_blank"

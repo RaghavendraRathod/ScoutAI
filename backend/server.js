@@ -1,7 +1,6 @@
 require("dotenv").config();
 
 const { GoogleGenAI } = require("@google/genai");
-
 const express = require("express");
 const cors = require("cors");
 
@@ -14,12 +13,33 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/*
+ * Safely parse JSON returned by Gemini.
+ * Gemini may occasionally wrap JSON in Markdown code fences.
+ */
+function parseGeminiJson(text) {
+  let cleaned = String(text || "").trim();
+
+  // Remove ```json ... ``` fences
+  cleaned = cleaned.replace(/^```json\s*/i, "");
+  cleaned = cleaned.replace(/^```\s*/i, "");
+  cleaned = cleaned.replace(/\s*```$/i, "");
+
+  return JSON.parse(cleaned.trim());
+}
+
+/*
+ * Health check
+ */
 app.get("/", (req, res) => {
   res.json({
     message: "ScoutAI backend is running",
   });
 });
 
+/*
+ * Test Gemini
+ */
 app.get("/api/test-ai", async (req, res) => {
   try {
     const response = await ai.models.generateContent({
@@ -39,6 +59,9 @@ app.get("/api/test-ai", async (req, res) => {
   }
 });
 
+/*
+ * Analyze search results
+ */
 app.post("/api/analyze", async (req, res) => {
   const { query, results } = req.body;
 
@@ -84,12 +107,14 @@ Rules:
 - Do not invent information that isn't present in the search result.
 - If a field cannot be determined, use "Not specified".
 - Keep whyRelevant concise.
-- Return valid JSON only.
 `;
 
     const response = await ai.models.generateContent({
       model: "gemini-3.6-flash",
       contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      },
     });
 
     const text = response.text;
@@ -97,8 +122,11 @@ Rules:
     let parsed;
 
     try {
-      parsed = JSON.parse(text);
-    } catch {
+      parsed = parseGeminiJson(text);
+    } catch (error) {
+      console.error("Gemini JSON parsing error:", error);
+      console.error("Gemini raw response:", text);
+
       return res.status(500).json({
         error: "Gemini returned invalid JSON",
         raw: text,
@@ -115,6 +143,9 @@ Rules:
   }
 });
 
+/*
+ * Main ScoutAI endpoint
+ */
 app.post("/api/scout", async (req, res) => {
   const { query, profile } = req.body;
 
@@ -125,7 +156,9 @@ app.post("/api/scout", async (req, res) => {
   }
 
   try {
-    // 1. Search the web with SerpApi
+    /*
+     * 1. Search the web with SerpApi
+     */
     const params = new URLSearchParams({
       engine: "google",
       q: query,
@@ -146,8 +179,10 @@ app.post("/api/scout", async (req, res) => {
 
     const searchResults = searchData.organic_results || [];
 
-    // Keep only the most useful fields and limit the number
-    // of results sent to Gemini.
+    /*
+     * Keep only the most useful fields
+     * and limit results sent to Gemini.
+     */
     const resultsForAI = searchResults.slice(0, 8).map((result) => ({
       position: result.position,
       title: result.title,
@@ -156,7 +191,9 @@ app.post("/api/scout", async (req, res) => {
       snippet: result.snippet,
     }));
 
-    // 2. Ask Gemini to analyze the search results
+    /*
+     * 2. Ask Gemini to analyze the results
+     */
     const prompt = `
 You are ScoutAI, an AI research assistant that helps students discover relevant opportunities.
 
@@ -165,12 +202,6 @@ The user searched for:
 
 The user's profile is:
 ${JSON.stringify(profile || {}, null, 2)}
-
-Analyze the following web search results:
-
-${JSON.stringify(resultsForAI, null, 2)}
-
-
 
 Analyze the following web search results:
 
@@ -188,7 +219,9 @@ Return ONLY valid JSON using exactly this structure:
       "category": "string",
       "skills": ["string"],
       "relevanceScore": 0,
-      "whyRelevant": "string"
+      "whyRelevant": "string",
+      "matchReasons": ["string"],
+      "potentialGaps": ["string"]
     }
   ]
 }
@@ -198,17 +231,24 @@ Rules:
 - The relevanceScore should reflect how well the opportunity matches BOTH the user's search query and the user's profile.
 - Give higher scores when the opportunity matches the user's skills, education, year, interests, and requested location.
 - Do not give a high score simply because the result contains the word "AI".
+- matchReasons must contain 2 to 4 concise reasons explaining why this opportunity matches the user.
+- potentialGaps must contain 0 to 3 concise potential gaps.
+- Only mention a skill as a match if that skill is actually present in the user's profile or clearly supported by the search result.
+- Do not invent eligibility requirements, skills, salary, deadlines, or experience requirements.
+- If there are no meaningful gaps, return an empty array for potentialGaps.
 - Only include results genuinely relevant to the user's query.
 - Do not invent information.
 - If information is unavailable, use "Not specified".
 - Keep whyRelevant concise.
 - Use the original result URL.
-- Return valid JSON only.
 `;
 
     const aiResponse = await ai.models.generateContent({
       model: "gemini-3.6-flash",
       contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      },
     });
 
     const text = aiResponse.text;
@@ -216,18 +256,25 @@ Rules:
     let analysis;
 
     try {
-      analysis = JSON.parse(text);
-    } catch {
+      analysis = parseGeminiJson(text);
+    } catch (error) {
+      console.error("Gemini JSON parsing error:", error);
+      console.error("Gemini raw response:", text);
+
       return res.status(500).json({
         error: "Gemini returned invalid JSON",
         raw: text,
       });
     }
 
-    // 3. Send the final ScoutAI response to React
+    /*
+     * 3. Send the final ScoutAI response to React
+     */
     res.json({
       query,
-      opportunities: analysis.opportunities || [],
+      opportunities: Array.isArray(analysis.opportunities)
+        ? analysis.opportunities
+        : [],
     });
   } catch (error) {
     console.error("ScoutAI error:", error);
@@ -238,6 +285,9 @@ Rules:
   }
 });
 
+/*
+ * Start server
+ */
 const PORT = 5000;
 
 app.listen(PORT, () => {
