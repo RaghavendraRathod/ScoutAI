@@ -1,75 +1,94 @@
-# React + TypeScript + Vite
+# ScoutAI 🔎
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI-powered opportunity discovery platform that helps students and developers find relevant internships, jobs, and other career opportunities.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 🔍 Search for internships, jobs, and other opportunities using natural-language queries
+- 🤖 AI-powered processing of user queries
+- ⚡ React + TypeScript frontend
+- 🔗 Node.js/Express backend API
+- 📱 Responsive web interface
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
+- React
+- TypeScript
+- Vite
+- CSS
 
-## Expanding the ESLint configuration
+### Backend
+- Node.js
+- Express.js
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### AI
+- Google Gemini API
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🏗️ Project Structure
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```text
+ScoutAI/
+├── backend/
+│   ├── server.js
+│   └── ...
+├── src/
+│   ├── App.tsx
+│   ├── App.css
+│   └── ...
+├── public/
+├── package.json
+└── README.md
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+⚙️ Getting Started
+1. Clone the repository
+git clone https://github.com/RaghavendraRathod/ScoutAI.git
+cd ScoutAI
+2. Install dependencies
+npm install
+3. Start the frontend
+npm run dev
+4. Start the backend
 
-```
+Open another terminal:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+cd backend
+npm install
+node server.js
+🔐 Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a .env file in the backend directory and add your Gemini API key:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+GEMINI_API_KEY=your_api_key_here
 
-```
+Never commit your API key to GitHub.
+
+## 🎯 Why ScoutAI?
+
+Finding relevant internships and career opportunities often requires searching across multiple platforms and trying different search queries.
+
+ScoutAI explores how AI can make this process simpler by allowing users to describe what they're looking for naturally.
+
+📚 What I Learned
+
+Building ScoutAI helped me work with:
+
+React and TypeScript
+Node.js and Express
+REST APIs
+AI API integration
+Environment variables and API security
+Git and GitHub
+Frontend/backend integration
+🔮 Future Improvements
+User accounts and saved searches
+Personalized recommendations
+More opportunity sources
+Filtering by skills, salary, experience, and deadline
+Notifications for new opportunities
+Improved AI ranking
+
+👨‍💻 Author
+Raghavendra Rathod
+
+B.E. Computer Science Student | Full-Stack & AI Developer
