@@ -7,6 +7,12 @@ const [opportunities, setOpportunities] = useState<any[]>([]);
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState("");
 
+const [savedOpportunities, setSavedOpportunities] = useState<any[]>(() => {
+  const saved = localStorage.getItem("scoutai_saved_opportunities");
+
+  return saved ? JSON.parse(saved) : [];
+});
+
 const [profile, setProfile] = useState({
   education: "",
   year: "",
@@ -54,6 +60,45 @@ setOpportunities(data.opportunities || []);
 }finally {
     setLoading(false);
   }
+}
+
+function toggleSaveOpportunity(opportunity: any) {
+  setSavedOpportunities((currentSaved) => {
+    const alreadySaved = currentSaved.some(
+      (item) => item.url === opportunity.url
+    );
+
+    const updated = alreadySaved
+      ? currentSaved.filter((item) => item.url !== opportunity.url)
+      : [...currentSaved, opportunity];
+
+    localStorage.setItem(
+      "scoutai_saved_opportunities",
+      JSON.stringify(updated)
+    );
+
+    return updated;
+  });
+}
+
+function updateApplicationStatus(url: string, status: string) {
+  setSavedOpportunities((currentSaved) => {
+    const updated = currentSaved.map((opportunity) =>
+      opportunity.url === url
+        ? {
+            ...opportunity,
+            applicationStatus: status,
+          }
+        : opportunity
+    );
+
+    localStorage.setItem(
+      "scoutai_saved_opportunities",
+      JSON.stringify(updated)
+    );
+
+    return updated;
+  });
 }
 
   return (
@@ -257,6 +302,19 @@ setOpportunities(data.opportunities || []);
     </ul>
   </div>
 )}
+
+<button
+  type="button"
+  className="save-button"
+  onClick={() => toggleSaveOpportunity(opportunity)}
+>
+  {savedOpportunities.some(
+    (item) => item.url === opportunity.url
+  )
+    ? "★ Saved"
+    : "☆ Save"}
+</button>
+
         <a
           href={opportunity.url}
           target="_blank"
@@ -266,6 +324,91 @@ setOpportunities(data.opportunities || []);
         </a>
       </article>
     ))}
+
+    <section className="tracker-section">
+  <div className="tracker-header">
+    <h2>Application Tracker</h2>
+    <p>Keep track of your opportunity pipeline.</p>
+  </div>
+
+  <div className="tracker-grid">
+    {["Saved", "Interested", "Applied", "Interview", "Accepted", "Rejected"].map(
+      (status) => {
+        const count = savedOpportunities.filter(
+          (opportunity) =>
+            (opportunity.applicationStatus || "Saved") === status
+        ).length;
+
+        return (
+          <div className="tracker-card" key={status}>
+            <span>{status}</span>
+            <strong>{count}</strong>
+          </div>
+        );
+      }
+    )}
+  </div>
+</section>
+
+    <section className="saved-section">
+  <div className="saved-header">
+    <h2>Saved Opportunities</h2>
+    <span>{savedOpportunities.length}</span>
+  </div>
+
+  {savedOpportunities.length === 0 ? (
+    <p className="saved-empty">
+      You haven't saved any opportunities yet.
+    </p>
+  ) : (
+    <div className="saved-list">
+      {savedOpportunities.map((opportunity) => (
+        <div className="saved-item" key={opportunity.url}>
+          <div>
+            <h3>{opportunity.title}</h3>
+            <p>
+              {opportunity.source} · {opportunity.location}
+            </p>
+          </div>
+
+<select
+  value={opportunity.applicationStatus || "Saved"}
+  onChange={(e) =>
+    updateApplicationStatus(
+      opportunity.url,
+      e.target.value
+    )
+  }
+>
+  <option value="Saved">Saved</option>
+  <option value="Interested">Interested</option>
+  <option value="Applied">Applied</option>
+  <option value="Interview">Interview</option>
+  <option value="Accepted">Accepted</option>
+  <option value="Rejected">Rejected</option>
+</select>
+
+          <div className="saved-actions">
+            <button
+              type="button"
+              onClick={() => toggleSaveOpportunity(opportunity)}
+            >
+              ★ Remove
+            </button>
+
+            <a
+              href={opportunity.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View →
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
   </div>
 </section>
     </main>
