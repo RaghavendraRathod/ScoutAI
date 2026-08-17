@@ -6,6 +6,9 @@ function App() {
 const [opportunities, setOpportunities] = useState<any[]>([]);
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState("");
+const [sortBy, setSortBy] = useState("match");
+const [categoryFilter, setCategoryFilter] = useState("All");
+const [minScore, setMinScore] = useState(0);
 
 const [savedOpportunities, setSavedOpportunities] = useState<any[]>(() => {
   const saved = localStorage.getItem("scoutai_saved_opportunities");
@@ -100,6 +103,43 @@ function updateApplicationStatus(url: string, status: string) {
     return updated;
   });
 }
+
+const categories = [
+  "All",
+  ...Array.from(
+    new Set(
+      opportunities
+        .map((opportunity) => opportunity.category)
+        .filter(Boolean)
+    )
+  ),
+];
+
+const filteredOpportunities = [...opportunities]
+  .filter((opportunity) => {
+    const matchesCategory =
+      categoryFilter === "All" ||
+      opportunity.category === categoryFilter;
+
+    const matchesScore =
+      Number(opportunity.relevanceScore || 0) >= minScore;
+
+    return matchesCategory && matchesScore;
+  })
+  .sort((a, b) => {
+    const scoreA = Number(a.relevanceScore || 0);
+    const scoreB = Number(b.relevanceScore || 0);
+
+    if (sortBy === "match") {
+      return scoreB - scoreA;
+    }
+
+    if (sortBy === "lowest") {
+      return scoreA - scoreB;
+    }
+
+    return 0;
+  });
 
   return (
     <main className="app">
@@ -239,14 +279,58 @@ function updateApplicationStatus(url: string, status: string) {
   </div>
 )}
 
-     <section className="results">
+<section className="results">
   <div className="results-header">
     <h2>Scout Results</h2>
-    <p>{opportunities.length} opportunities found</p>
+    <p>
+  {filteredOpportunities.length} of {opportunities.length} opportunities shown
+</p>
+  </div>
+
+  <div className="filter-controls">
+    <label>
+      Sort:
+      <select
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value)}
+      >
+        <option value="match">Highest Match</option>
+        <option value="lowest">Lowest Match</option>
+      </select>
+    </label>
+
+    <label>
+      Category:
+      <select
+        value={categoryFilter}
+        onChange={(e) => setCategoryFilter(e.target.value)}
+      >
+        {categories.map((category) => (
+          <option value={category} key={category}>
+            {category}
+          </option>
+        ))}
+      </select>
+    </label>
+
+    <label>
+      Minimum Match:
+      <select
+        value={minScore}
+        onChange={(e) => setMinScore(Number(e.target.value))}
+      >
+        <option value={0}>Any</option>
+        <option value={50}>50%+</option>
+        <option value={60}>60%+</option>
+        <option value={70}>70%+</option>
+        <option value={80}>80%+</option>
+        <option value={90}>90%+</option>
+      </select>
+    </label>
   </div>
 
   <div className="results-grid">
-    {opportunities.map((opportunity, index) => (
+    {filteredOpportunities.map((opportunity, index) => (
       <article className="result-card" key={index}>
         <span className="result-position">
           {opportunity.relevanceScore}% match
