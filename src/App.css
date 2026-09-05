@@ -2,8 +2,13 @@
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 40px 20px;
+  align-items: flex-start;
+  padding: 40px 20px 80px;
+}
+
+.app-shell {
+  width: min(1200px, 100%);
+  margin: 0 auto;
 }
 
 .hero {
@@ -151,6 +156,13 @@ button:disabled {
 }
 
 /* ScoutAI result card improvements */
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
 
 .result-card {
   position: relative;
