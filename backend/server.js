@@ -10,7 +10,14 @@ const ai = new GoogleGenAI({
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://scout-ai-ecru.vercel.app",
+      "http://localhost:5173",
+    ],
+  })
+);
 app.use(express.json());
 
 // Simple rate limiter for Scout searches
@@ -476,8 +483,10 @@ Return ONLY the JSON object.
 /*
  * Start server
  */
-const PORT = 5000;
 
-app.listen(PORT, () => {
-  console.log(`ScoutAI backend running on http://localhost:${PORT}`);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
