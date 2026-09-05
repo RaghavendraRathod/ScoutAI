@@ -1,94 +1,201 @@
-# ScoutAI 🔎
+# ScoutAI 🚀
 
-AI-powered opportunity discovery platform that helps students and developers find relevant internships, jobs, and other career opportunities.
+> **Find opportunities. Scout smarter.**
 
-## 🚀 Features
+ScoutAI is an AI-powered opportunity discovery platform that helps students find internships, jobs, and career opportunities that actually match their skills, interests, education, and goals.
 
-- 🔍 Search for internships, jobs, and other opportunities using natural-language queries
-- 🤖 AI-powered processing of user queries
-- ⚡ React + TypeScript frontend
-- 🔗 Node.js/Express backend API
-- 📱 Responsive web interface
+Instead of manually searching through dozens of job boards, ScoutAI lets users describe what they are looking for in natural language. It searches the web, analyzes the results using Google Gemini, and ranks opportunities based on relevance to the user's profile.
 
-## 🛠️ Tech Stack
+## ✨ Features
 
-### Frontend
-- React
-- TypeScript
-- Vite
-- CSS
+- 🔎 **Natural-language opportunity search**
+- 🤖 **AI-powered relevance scoring**
+- 👤 **Personalized profile matching**
+- 📊 **Match scores for every opportunity**
+- ✅ **"Why you're a good match" explanations**
+- ⚠️ **Potential skill-gap identification**
+- 🏷️ **Category filtering**
+- 📈 **Sort by relevance**
+- 💾 **Save opportunities**
+- 📋 **Application tracker**
+- 🔗 **Direct links to original opportunities**
+- 🌐 **Real-time web search through SerpApi**
 
-### Backend
-- Node.js
-- Express.js
-
-### AI
-- Google Gemini API
-
-## 🏗️ Project Structure
+## 🧠 How ScoutAI Works
 
 ```text
+User Profile + Natural Language Query
+                ↓
+          ScoutAI Frontend
+                ↓
+          Express Backend
+                ↓
+          SerpApi Web Search
+                ↓
+       Search Results Collection
+                ↓
+          Google Gemini AI
+                ↓
+     Relevance & Profile Analysis
+                ↓
+      Ranked Opportunities
+                ↓
+        Personalized Results
+
+        
+     
+AI Matching
+
+ScoutAI evaluates opportunities using:
+
+User's education
+Academic year
+Technical skills
+Interests
+Search query
+Location preferences
+Opportunity relevance
+
+Each opportunity receives a relevance score along with explanations describing why it matches the user's profile and what potential gaps may exist.
+
+🛠️ Tech Stack
+Frontend
+React
+TypeScript
+Vite
+CSS
+Backend
+Node.js
+Express.js
+CORS
+dotenv
+AI & Search
+Google Gemini API
+SerpApi
+Deployment
+Vercel — Frontend
+Render — Backend
+
+📁 Project Structure
+
 ScoutAI/
 ├── backend/
 │   ├── server.js
-│   └── ...
+│   ├── package.json
+│   └── .env
+│
+├── public/
 ├── src/
+│   ├── assets/
 │   ├── App.tsx
 │   ├── App.css
-│   └── ...
-├── public/
+│   ├── index.css
+│   └── main.tsx
+│
+├── .gitignore
 ├── package.json
+├── vite.config.ts
 └── README.md
 
-⚙️ Getting Started
+🚀 Getting Started
 1. Clone the repository
 git clone https://github.com/RaghavendraRathod/ScoutAI.git
 cd ScoutAI
-2. Install dependencies
+2. Install frontend dependencies
 npm install
-3. Start the frontend
-npm run dev
-4. Start the backend
-
-Open another terminal:
-
+3. Install backend dependencies
 cd backend
 npm install
-node server.js
-🔐 Environment Variables
+4. Configure backend environment variables
 
-Create a .env file in the backend directory and add your Gemini API key:
+Create:
 
-GEMINI_API_KEY=your_api_key_here
+backend/.env
 
-Never commit your API key to GitHub.
+Add:
 
-## 🎯 Why ScoutAI?
+GEMINI_API_KEY=your_gemini_api_key
+SERPAPI_KEY=your_serpapi_api_key
 
-Finding relevant internships and career opportunities often requires searching across multiple platforms and trying different search queries.
+Never commit API keys to GitHub.
 
-ScoutAI explores how AI can make this process simpler by allowing users to describe what they're looking for naturally.
+5. Configure frontend environment variables
 
-📚 What I Learned
+Create a .env file in the project root:
 
-Building ScoutAI helped me work with:
+VITE_API_URL=http://localhost:5000
+6. Start the backend
 
-React and TypeScript
-Node.js and Express
-REST APIs
-AI API integration
-Environment variables and API security
-Git and GitHub
-Frontend/backend integration
+From the backend directory:
+
+npm start
+
+The backend will run on:
+
+http://localhost:5000
+7. Start the frontend
+
+From the project root:
+
+npm run dev
+
+The frontend will run on the Vite development server.
+
+🌐 Live Demo
+
+Frontend:
+
+https://scout-ai-ecru.vercel.app/
+
+Backend:
+
+https://scoutai-backend-agg4.onrender.com/
+
+🔐 Security
+
+ScoutAI keeps API credentials on the backend.
+
+Gemini API key is never exposed to the frontend.
+SerpApi key is never exposed to the frontend.
+Environment files are excluded from Git.
+Backend CORS is restricted to the deployed frontend and local development environment.
+Scout searches are rate-limited to reduce abuse and excessive API usage.
+
+🎯 Example Queries
+Find AI internships for students in Bengaluru
+
+Find software engineering internships for 3rd year students
+
+Find machine learning internships that match my skills
+
+Find backend development opportunities for students
+
+Find GenAI internships in India
+
+💡 Why ScoutAI?
+
+Students often have to search across multiple platforms such as job boards, company websites, and internship portals.
+
+ScoutAI brings the discovery process into one place and adds an AI-powered layer of personalization.
+
+Instead of simply asking:
+
+"What opportunities exist?"
+
+ScoutAI helps answer:
+
+"Which opportunities are most relevant to me, and why?"
+
 🔮 Future Improvements
-User accounts and saved searches
-Personalized recommendations
 More opportunity sources
-Filtering by skills, salary, experience, and deadline
-Notifications for new opportunities
-Improved AI ranking
+Opportunity freshness and verification
+Advanced location and salary filters
+Email/job alerts
+Application deadline tracking
+Resume-aware matching
+Skill-gap learning recommendations
+User accounts and cloud-synced saved opportunities
+More advanced ranking and recommendation models
+📄 License
 
-👨‍💻 Author
-Raghavendra Rathod
-
-B.E. Computer Science Student | Full-Stack & AI Developer
+This project is built as a hackathon project and is intended for educational and demonstration purposes.
