@@ -30,7 +30,7 @@ function App() {
     setOpportunities([]);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/scout`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/scout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,17 @@ function App() {
         }),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+
+      let data: any;
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        throw new Error(
+          `Server returned an invalid response (${response.status}).`
+        );
+      }
 
       if (!response.ok) {
         throw new Error(data.error || "ScoutAI request failed");
